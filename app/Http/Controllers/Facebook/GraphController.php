@@ -18,13 +18,18 @@ class GraphController extends Controller
     /**
      * GraphController constructor.
      * @param $fb
+     * @throws FacebookSDKException
      */
     public function __construct(Facebook $fb)
     {
         $this->fb = $fb;
-        if ($this->fb->getDefaultAccessToken() == null) {
+        $token = $this->getAccessToken();
+        dd($token);
+        if (empty($this->fb->getDefaultAccessToken()->getValue())) {
+
             try {
-                $this->fb->setDefaultAccessToken($this->getAccessToken());
+
+                $this->fb->setDefaultAccessToken($token);
             } catch (FacebookSDKException $e) {
                 Log::error($e);
             }
@@ -52,6 +57,6 @@ class GraphController extends Controller
      * @throws \Facebook\Exceptions\FacebookSDKException
      */
     protected function getAccessToken() {
-        $this->fb->get('/' . config('app.fanpage_id') . '?fields=access_token');
+        return $this->fb->get('/' . config('app.fanpage_id') . '?fields=access_token');
     }
 }
